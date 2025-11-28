@@ -226,13 +226,37 @@ function persist() {
 // ---------------------------
 // HELPER: YEAR DETECTION
 // ---------------------------
-
 function detectYear(lower) {
-  if (/(1st|first|i\b|i b\.sc|i bsc)/.test(lower)) return "I";
-  if (/(2nd|second|ii\b|ii b\.sc|ii bsc)/.test(lower)) return "II";
-  if (/(3rd|third|iii\b|iii b\.sc|iii bsc)/.test(lower)) return "III";
+  // Clean: remove dots, spaces, parentheses
+  const clean = lower.replace(/[\.\(\)]/g, "").replace(/\s+/g, "");
+
+  if (
+    /1styear/.test(clean) ||
+    /firstyear/.test(clean) ||
+    /\bi\b/.test(clean) ||
+    /ibscai/.test(clean) ||
+    /ibsc/.test(clean)
+  ) return "I";
+
+  if (
+    /2ndyear/.test(clean) ||
+    /secondyear/.test(clean) ||
+    /\bii\b/.test(clean) ||
+    /iibscai/.test(clean) ||
+    /iibsc/.test(clean)
+  ) return "II";
+
+  if (
+    /3rdyear/.test(clean) ||
+    /thirdyear/.test(clean) ||
+    /\biii\b/.test(clean) ||
+    /iiibscai/.test(clean) ||
+    /iiibsc/.test(clean)
+  ) return "III";
+
   return null;
 }
+
 
 // ---------------------------
 // HELPER: FORMAT TIMETABLE
