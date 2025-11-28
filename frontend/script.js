@@ -2,9 +2,8 @@ const BACKEND_URL = "http://127.0.0.1:5000/chat";
 const STORAGE_KEY = "campusguide_chat";
 const SESSION_KEY = "campusguide_session";
 
-
 const openBtn = document.getElementById("cg-open-btn");
-const widget = document.getElementById("cg-widget");   
+const widget = document.getElementById("cg-widget");
 const closeBtn = document.getElementById("cg-close-btn");
 const chatbox = document.getElementById("cg-chatbox");
 const sendBtn = document.getElementById("cg-send");
@@ -12,20 +11,17 @@ const inputEl = document.getElementById("cg-input");
 const typingEl = document.getElementById("typing-indicator");
 const clearBtn = document.getElementById("clear-chat");
 
-
 let sessionId = localStorage.getItem(SESSION_KEY);
 if (!sessionId) {
   sessionId = "sess_" + Math.random().toString(36).slice(2, 10);
   localStorage.setItem(SESSION_KEY, sessionId);
 }
 
-
 let messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 renderMessages();
 
-
-openBtn.addEventListener("click", () => widget.classList.remove("hidden")); 
-closeBtn && closeBtn.addEventListener("click", () => widget.classList.add("hidden")); 
+openBtn.addEventListener("click", () => widget.classList.remove("hidden"));
+closeBtn && closeBtn.addEventListener("click", () => widget.classList.add("hidden"));
 sendBtn.addEventListener("click", onSend);
 inputEl.addEventListener("keydown", e => { if (e.key === "Enter") onSend(); });
 clearBtn && clearBtn.addEventListener("click", clearChat);
@@ -68,15 +64,41 @@ async function onSend() {
 
   showTyping(true);
 
-  // ----------------------------
-  // 1. LOCAL DAY ORDER CHECK
-  // ----------------------------
+  // ----------------------------------------------------
+  // DAY ORDER ENGINE (today, tomorrow, day after, DO#)
+  // ----------------------------------------------------
   const lower = text.toLowerCase();
-
   if (lower.includes("day order")) {
 
-    const today = new Date();
-    const weekday = today.getDay(); // Sun=0, Mon=1...
+    const now = new Date();
+    let targetDate = new Date();
+
+    // tomorrow
+    if (lower.includes("tomorrow")) {
+      targetDate.setDate(now.getDate() + 1);
+    }
+
+    // day after tomorrow
+    else if (lower.includes("day after")) {
+      targetDate.setDate(now.getDate() + 2);
+    }
+
+    // day order 1/2/3/4/5/6
+    const matchNum = lower.match(/day order\s*(\d)/);
+    if (matchNum) {
+      const num = parseInt(matchNum[1]);
+      if (num >= 1 && num <= 6) {
+        showTyping(false);
+        const reply = `Day Order ${num}.`;
+        messages.push({ sender: "bot", text: reply });
+        persist();
+        chatbox.appendChild(createMessageEl("bot", reply));
+        chatbox.scrollTop = chatbox.scrollHeight;
+        return;
+      }
+    }
+
+    const weekday = targetDate.getDay(); // Sun=0
 
     const orderMap = {
       1: "Day Order 1",
@@ -88,27 +110,23 @@ async function onSend() {
     };
 
     let reply;
-
     if (weekday === 0) {
-      reply = "Today is Sunday. No day order.";
+      reply = "It is Sunday. No day order.";
     } else {
-      reply = `Today's day order is ${orderMap[weekday]}.`;
+      reply = `The day order for that day is ${orderMap[weekday]}.`;
     }
 
     showTyping(false);
-
     messages.push({ sender: "bot", text: reply });
     persist();
-
     chatbox.appendChild(createMessageEl("bot", reply));
     chatbox.scrollTop = chatbox.scrollHeight;
-
-    return;  // STOP here. Do NOT call backend.
+    return;
   }
 
-  // ----------------------------
-  // 2. NORMAL BACKEND CALL
-  // ----------------------------
+  // ----------------------------------------------------
+  // BACKEND CALL (normal chat)
+  // ----------------------------------------------------
   try {
     const r = await fetch(BACKEND_URL, {
       method: "POST",
@@ -141,12 +159,11 @@ function clearChat() {
   persist();
   chatbox.innerHTML = "";
 
-  sessionId = "sess_" + Math.random().toString(36).slice(2,10);
+  sessionId = "sess_" + Math.random().toString(36).slice(2, 10);
   localStorage.setItem(SESSION_KEY, sessionId);
 }
 
-
 if (!localStorage.getItem("cg_seen_before")) {
-  widget.classList.remove("hidden");  
+  widget.classList.remove("hidden");
   localStorage.setItem("cg_seen_before", "1");
 }
