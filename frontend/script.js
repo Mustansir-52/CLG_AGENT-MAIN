@@ -1,5 +1,4 @@
-
-const BACKEND_URL = "http://127.0.0.1:4000/chat";
+const BACKEND_URL = "http://127.0.0.1:5000/chat";
 const STORAGE_KEY = "campusguide_chat";
 const SESSION_KEY = "campusguide_session";
 
