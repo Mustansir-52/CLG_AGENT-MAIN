@@ -3,6 +3,7 @@ const BACKEND_URL = "http://127.0.0.1:4000/chat";
 const STORAGE_KEY = "campusguide_chat";
 const SESSION_KEY = "campusguide_session";
 
+
 const openBtn = document.getElementById("cg-open-btn");
 const widget = document.getElementById("cg-widget");   
 const closeBtn = document.getElementById("cg-close-btn");
