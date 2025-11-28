@@ -68,6 +68,47 @@ async function onSend() {
 
   showTyping(true);
 
+  // ----------------------------
+  // 1. LOCAL DAY ORDER CHECK
+  // ----------------------------
+  const lower = text.toLowerCase();
+
+  if (lower.includes("day order")) {
+
+    const today = new Date();
+    const weekday = today.getDay(); // Sun=0, Mon=1...
+
+    const orderMap = {
+      1: "Day Order 1",
+      2: "Day Order 2",
+      3: "Day Order 3",
+      4: "Day Order 4",
+      5: "Day Order 5",
+      6: "Day Order 6"
+    };
+
+    let reply;
+
+    if (weekday === 0) {
+      reply = "Today is Sunday. No day order.";
+    } else {
+      reply = `Today's day order is ${orderMap[weekday]}.`;
+    }
+
+    showTyping(false);
+
+    messages.push({ sender: "bot", text: reply });
+    persist();
+
+    chatbox.appendChild(createMessageEl("bot", reply));
+    chatbox.scrollTop = chatbox.scrollHeight;
+
+    return;  // STOP here. Do NOT call backend.
+  }
+
+  // ----------------------------
+  // 2. NORMAL BACKEND CALL
+  // ----------------------------
   try {
     const r = await fetch(BACKEND_URL, {
       method: "POST",
