@@ -45,14 +45,14 @@ def load_pdfs(pdf_files):
         except Exception as e:
             print(f"Error loading {file}:", e)
 
-pdf_list = ["college.pdf", "bb.pdf", "SHIFT 1 UG & PG.pdf","SHIFT 2 UG & PG.pdf"]
+pdf_list = ["college.pdf", "SHIFT 1 UG & PG.pdf","SHIFT 2 UG & PG.pdf"]
 load_pdfs(pdf_list)
 
 # ---------------------- OPTIONAL WEB SEARCH ----------------------
 
-def search_web(query):
+'''def search_web(query):
     return "Web search unavailable in this version."
-
+'''
 # ---------------------- CHAT ROUTE ----------------------
 
 @app.route("/chat", methods=["POST"])
@@ -78,8 +78,8 @@ def chat():
             return jsonify({"reply": reply})
 
         # ---- Web Search Trigger ----
-        use_web = any(word in message.lower() for word in ["score", "weather", "news", "who is", "live", "update"])
-        web_info = search_web(message) if use_web else ""
+        '''use_web = any(word in message.lower() for word in ["score", "weather", "news", "who is", "live", "update"])
+        web_info = search_web(message) if use_web else ""'''
 
         # ---- LLM Prompt ----
         prompt = f"""
@@ -91,7 +91,7 @@ College PDF Data:
 
 Web Search Results:
 -------------------
-{web_info}
+
 
 Conversation History:
 {json.dumps(sessions[session_id])}
