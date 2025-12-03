@@ -1,11 +1,8 @@
 body {
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(135deg, #288c17b4, #6a1902aa),
-    url("chatbot_project_bg.jpg");
-    height: 100vh;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: url("chatbot_project_bg.jpg") center/cover no-repeat fixed;
+  font-family: Arial, sans-serif;
 }
 
 :root{
